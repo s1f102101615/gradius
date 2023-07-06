@@ -1,78 +1,52 @@
-import type { TaskModel } from '$/commonTypesWithClient/models';
 import { useAtom } from 'jotai';
-import type { ChangeEvent, FormEvent } from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Loading } from 'src/components/Loading/Loading';
-import { BasicHeader } from 'src/pages/@components/BasicHeader/BasicHeader';
-import { apiClient } from 'src/utils/apiClient';
-import { returnNull } from 'src/utils/returnNull';
 import { userAtom } from '../atoms/user';
-import styles from './index.module.css';
 
 const Home = () => {
   const [user] = useAtom(userAtom);
-  const [tasks, setTasks] = useState<TaskModel[]>();
-  const [label, setLabel] = useState('');
-  const inputLabel = (e: ChangeEvent<HTMLInputElement>) => {
-    setLabel(e.target.value);
-  };
-  const fetchTasks = async () => {
-    const tasks = await apiClient.tasks.$get().catch(returnNull);
 
-    if (tasks !== null) setTasks(tasks);
+  const handleKeyDown = (event: KeyboardEvent) => {
+    // Escapeキーの場合処理を行う
+    if (event.key === 'ArrowUp') {
+      console.log('上');
+    }
+    if (event.key === 'ArrowDown') {
+      console.log('下');
+    }
+    if (event.key === 'ArrowLeft') {
+      console.log('左');
+    }
+    if (event.key === 'ArrowRight') {
+      console.log('右');
+    }
   };
-  const createTask = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!label) return;
+  // const keyDownHandler = (e: React.KeyboardEvent<HTMLDivElement>) => {
+  //   const key = e.code;
 
-    await apiClient.tasks.post({ body: { label } });
-    setLabel('');
-    await fetchTasks();
-  };
-  const toggleDone = async (task: TaskModel) => {
-    await apiClient.tasks._taskId(task.id).patch({ body: { done: !task.done } });
-    await fetchTasks();
-  };
-  const deleteTask = async (task: TaskModel) => {
-    await apiClient.tasks._taskId(task.id).delete();
-    await fetchTasks();
-  };
+  //   if (key === 'ArrowUp') {
+  //     console.log('u');
+  //   }
 
+  //   if (key === 'ArrowDown') {
+  //     console.log('d');
+  //   }
+
+  //   if (key === 'ArrowLeft') {
+  //     console.log('l');
+  //   }
+
+  //   if (key === 'ArrowRight') {
+  //     console.log('r');
+  //   }
+  // };
   useEffect(() => {
-    fetchTasks();
+    document.addEventListener('keydown', handleKeyDown, false);
   }, []);
 
-  if (!tasks || !user) return <Loading visible />;
+  if (!user) return <Loading visible />;
 
-  return (
-    <>
-      <BasicHeader user={user} />
-      <div className={styles.title} style={{ marginTop: '160px' }}>
-        Welcome to frourio!
-      </div>
-
-      <form style={{ textAlign: 'center', marginTop: '80px' }} onSubmit={createTask}>
-        <input value={label} type="text" onChange={inputLabel} />
-        <input type="submit" value="ADD" />
-      </form>
-      <ul className={styles.tasks}>
-        {tasks.map((task) => (
-          <li key={task.id}>
-            <label>
-              <input type="checkbox" checked={task.done} onChange={() => toggleDone(task)} />
-              <span>{task.label}</span>
-            </label>
-            <input
-              type="button"
-              value="DELETE"
-              className={styles.deleteBtn}
-              onClick={() => deleteTask(task)}
-            />
-          </li>
-        ))}
-      </ul>
-    </>
-  );
+  return <>{/* <App /> */}</>;
 };
 
 export default Home;
