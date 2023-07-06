@@ -3,8 +3,6 @@ import { Layer, Rect, Stage } from 'react-konva';
 
 function App() {
   //NOWposinonが現在の変数Setnowposionが変更する式
-  const [nowPosision, setNowPosision] = useState([0, 0]);
-
   return (
     <Stage width={1920} height={1080}>
       <Layer>
