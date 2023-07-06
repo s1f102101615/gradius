@@ -1,51 +1,82 @@
-import type { TaskModel } from '$/commonTypesWithClient/models';
 import { useAtom } from 'jotai';
-import { useEffect, useState } from 'react';
+
+import { useState } from 'react';
 import { Loading } from 'src/components/Loading/Loading';
 import App from 'src/konva/konvatest';
 import { BasicHeader } from 'src/pages/@components/BasicHeader/BasicHeader';
 import { apiClient } from 'src/utils/apiClient';
-import { returnNull } from 'src/utils/returnNull';
 import { userAtom } from '../atoms/user';
 
 const Home = () => {
   const [user] = useAtom(userAtom);
-  const [tasks, setTasks] = useState<TaskModel[]>();
 
-  const [nowkey, setNow] = useState([0, 0]);
+  const [nowkey, setNowkey] = useState([0, 0]);
+  const [board, setBoard] = useState([
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ]);
 
-  const fetchTasks = async () => {
-    const tasks = await apiClient.tasks.$get().catch(returnNull);
+  const keyDownHandler = async (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const key = e.code;
 
-    if (tasks !== null) setTasks(tasks);
+    if (key === 'ArrowUp') {
+      const a = await apiClient.control.post({ body: { x: nowkey[0], y: nowkey[1], a: 1 } });
+      setNowkey([a.body.x, a.body.y]);
+      const p = board.map((row) => row.map(() => 0));
+      p[a.body.x][a.body.y] = 1;
+      setBoard(p);
+      console.table(p);
+    }
+
+    if (key === 'ArrowDown') {
+      const a = await apiClient.control.post({ body: { x: nowkey[0], y: nowkey[1], a: 2 } });
+      setNowkey([a.body.x, a.body.y]);
+      const p = board.map((row) => row.map(() => 0));
+      p[a.body.x][a.body.y] = 1;
+      setBoard(p);
+      console.table(p);
+    }
+
+    if (key === 'ArrowLeft') {
+      const a = await apiClient.control.post({ body: { x: nowkey[0], y: nowkey[1], a: 0 } });
+      setNowkey([a.body.x, a.body.y]);
+      const p = board.map((row) => row.map(() => 0));
+      p[a.body.x][a.body.y] = 1;
+      setBoard(p);
+      console.table(p);
+    }
+
+    if (key === 'ArrowRight') {
+      const a = await apiClient.control.post({ body: { x: nowkey[0], y: nowkey[1], a: 3 } });
+      setNowkey([a.body.x, a.body.y]);
+      const p = board.map((row) => row.map(() => 0));
+      p[a.body.x][a.body.y] = 1;
+      setBoard(p);
+      console.table(p);
+    }
+
   };
-  // const createTask = async () => {
-  //   const aa = await apiClient.control.post({
-  //     body: { x: 1 },
-  //   });
-  //   setNowkey(Number(aa));
-  // };
 
-  useEffect(() => {
-    fetchTasks();
-  }, []);
-
-  const createNum = async () => {
-    const a = await apiClient.control.post({ body: { x: 12, y: 11, a: 1 } });
-    console.log(a.body.x, a.body.y);
-    setNow([Number(a.body.x), Number(a.body.y)]);
-  };
-  if (!tasks || !user) return <Loading visible />;
+  if (!user) return <Loading visible />;
 
   return (
     <>
       <BasicHeader user={user} />
-
-      <button onClick={createNum} />
-      <p>{nowkey}</p>
-      <button onClick={createNum} />
-
-      <App />
+      <div
+        className="container"
+        tabIndex={0}
+        onKeyDown={keyDownHandler}
+        style={{ border: 'solid' }}
+      >
+        <p>{nowkey}</p>
+      </div>
     </>
   );
 };
