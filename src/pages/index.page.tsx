@@ -2,7 +2,6 @@ import { useAtom } from 'jotai';
 
 import { useState } from 'react';
 import { Loading } from 'src/components/Loading/Loading';
-import App from 'src/konva/konvatest';
 import { BasicHeader } from 'src/pages/@components/BasicHeader/BasicHeader';
 import { apiClient } from 'src/utils/apiClient';
 import { userAtom } from '../atoms/user';
