@@ -21,25 +21,7 @@ const Home = () => {
       console.log('右');
     }
   };
-  // const keyDownHandler = (e: React.KeyboardEvent<HTMLDivElement>) => {
-  //   const key = e.code;
-
-  //   if (key === 'ArrowUp') {
-  //     console.log('u');
-  //   }
-
-  //   if (key === 'ArrowDown') {
-  //     console.log('d');
-  //   }
-
-  //   if (key === 'ArrowLeft') {
-  //     console.log('l');
-  //   }
-
-  //   if (key === 'ArrowRight') {
-  //     console.log('r');
-  //   }
-  // };
+ 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown, false);
   }, []);
@@ -47,6 +29,23 @@ const Home = () => {
   if (!user) return <Loading visible />;
 
   return <>{/* <App /> */}</>;
+ 
+  const createNum = async () => {
+    const a = await apiClient.control.post({ body: { x: 12, y: 11, a: 1 } });
+    console.log(a.body.x, a.body.y);
+    setNowkey([Number(a.body.x), Number(a.body.y)]);
+  };
+  if (!tasks || !user) return <Loading visible />;
+
+  return (
+    <>
+      <BasicHeader user={user} />
+      
+      <input onClick={createNum} />
+
+      <p>{nowkey}</p>
+      )
+  
 };
 
 export default Home;
