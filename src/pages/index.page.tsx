@@ -1,6 +1,6 @@
 import type { TaskModel } from '$/commonTypesWithClient/models';
 import { useAtom } from 'jotai';
-import type { ChangeEvent, FormEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { useEffect, useState } from 'react';
 import { Loading } from 'src/components/Loading/Loading';
 import { BasicHeader } from 'src/pages/@components/BasicHeader/BasicHeader';
@@ -13,6 +13,7 @@ const Home = () => {
   const [user] = useAtom(userAtom);
   const [tasks, setTasks] = useState<TaskModel[]>();
   const [label, setLabel] = useState('');
+  const [nowkey, setNowkey] = useState(0);
   const inputLabel = (e: ChangeEvent<HTMLInputElement>) => {
     setLabel(e.target.value);
   };
@@ -21,13 +22,11 @@ const Home = () => {
 
     if (tasks !== null) setTasks(tasks);
   };
-  const createTask = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!label) return;
-
-    await apiClient.tasks.post({ body: { label } });
-    setLabel('');
-    await fetchTasks();
+  const createTask = async () => {
+    const aa = await apiClient.control.post({
+      body: { x: 1 },
+    });
+    setNowkey(Number(aa));
   };
   const toggleDone = async (task: TaskModel) => {
     await apiClient.tasks._taskId(task.id).patch({ body: { done: !task.done } });
@@ -47,14 +46,16 @@ const Home = () => {
   return (
     <>
       <BasicHeader user={user} />
+
       <div className={styles.title} style={{ marginTop: '160px' }}>
         Welcome to frourio!
       </div>
-
-      <form style={{ textAlign: 'center', marginTop: '80px' }} onSubmit={createTask}>
+      <div>{nowkey}</div>
+      <form style={{ textAlign: 'center', marginTop: '80px' }}>
         <input value={label} type="text" onChange={inputLabel} />
         <input type="submit" value="ADD" />
       </form>
+      <input onClick={createTask} />
       <ul className={styles.tasks}>
         {tasks.map((task) => (
           <li key={task.id}>
@@ -71,6 +72,7 @@ const Home = () => {
           </li>
         ))}
       </ul>
+      {/* <App /> */}
     </>
   );
 };
