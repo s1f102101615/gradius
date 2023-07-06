@@ -1,4 +1,4 @@
-import { useState } from 'react';
+
 import { Layer, Rect, Stage } from 'react-konva';
 
 function App() {
