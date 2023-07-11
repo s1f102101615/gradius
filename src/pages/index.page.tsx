@@ -18,6 +18,7 @@ const Home = () => {
   );
   const animationRef = useRef<Konva.Animation | null>(null);
 
+  // Zで弾発射 Spaceで敵生成
   const keyDownHandler = async (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.code === 'KeyZ') {
       const bullet = { x: nowkey[1] + 54, y: nowkey[0] + 20, speedX: 1000 };
@@ -75,6 +76,15 @@ const Home = () => {
                 x: bullet.x + bullet.speedX * timeDiff,
               }))
               .filter((bullet) => bullet.x < 1290) // 画面の右端に到達していない弾のみをフィルタリング
+        );
+        setEnemy(
+          (prev) =>
+            prev
+              .map((enemy) => ({
+                ...enemy,
+                x: enemy.x + enemy.speedX * timeDiff,
+              }))
+              .filter((enemy) => enemy.x > 0) // 画面の右端に到達していない敵のみをフィルタリング
         );
         // 敵の動き
         setEnemy((prev) =>

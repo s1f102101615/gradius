@@ -31,7 +31,6 @@ export const controlUsecase = {
       const newY = y + 2;
       return { x, y: newY };
     }
-    console.log(KeyEvent);
     return { x, y };
   },
 };
