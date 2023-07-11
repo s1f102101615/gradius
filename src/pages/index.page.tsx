@@ -77,15 +77,6 @@ const Home = () => {
               }))
               .filter((bullet) => bullet.x < 1290) // 画面の右端に到達していない弾のみをフィルタリング
         );
-        setEnemy(
-          (prev) =>
-            prev
-              .map((enemy) => ({
-                ...enemy,
-                x: enemy.x + enemy.speedX * timeDiff,
-              }))
-              .filter((enemy) => enemy.x > 0) // 画面の右端に到達していない敵のみをフィルタリング
-        );
         // 敵の動き
         setEnemy((prev) =>
           prev.map((enemy) => ({
@@ -93,10 +84,18 @@ const Home = () => {
             x: enemy.x + enemy.speedX * timeDiff,
           }))
         );
+        setEnemy((prev) =>
+          prev
+            .map((enemy) => ({
+              ...enemy,
+              x: enemy.x + enemy.speedX * timeDiff,
+            }))
+            .filter((enemy) => enemy.x > 0)
+        );
         // 弾と敵が当たっているか
         checkCollisions();
       }
-    });
+    }, Layer);
     anim.start();
 
     animationRef.current = anim;
