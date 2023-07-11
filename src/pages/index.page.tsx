@@ -95,7 +95,7 @@ const Home = () => {
         // 弾と敵が当たっているか
         checkCollisions();
       }
-    }, Layer);
+    });
     anim.start();
 
     animationRef.current = anim;
