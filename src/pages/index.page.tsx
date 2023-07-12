@@ -18,12 +18,13 @@ const Home = () => {
   );
   const animationRef = useRef<Konva.Animation | null>(null);
 
+  // Zで弾発射 Spaceで敵生成
   const keyDownHandler = async (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.code === 'KeyZ') {
       const bullet = { x: nowkey[1] + 54, y: nowkey[0] + 20, speedX: 1000 };
       setGradius_bullet((prevGradius_bullet) => [...prevGradius_bullet, bullet]);
     } else if (e.code === 'Space') {
-      const enemyspwan = { x: 1280, y: Math.floor(Math.random() * 721), speedX: -100 };
+      const enemyspwan = { x: 640, y: Math.floor(Math.random() * 481), speedX: -100 };
       setEnemy((prevEnemy) => [...prevEnemy, enemyspwan]);
     }
     const a = await apiClient.control.post({
@@ -74,7 +75,7 @@ const Home = () => {
                 ...bullet,
                 x: bullet.x + bullet.speedX * timeDiff,
               }))
-              .filter((bullet) => bullet.x < 1290) // 画面の右端に到達していない弾のみをフィルタリング
+              .filter((bullet) => bullet.x < 640) // 画面の右端に到達していない弾のみをフィルタリング
         );
         // 敵の動き
         setEnemy((prev) =>
@@ -82,6 +83,14 @@ const Home = () => {
             ...enemy,
             x: enemy.x + enemy.speedX * timeDiff,
           }))
+        );
+        setEnemy((prev) =>
+          prev
+            .map((enemy) => ({
+              ...enemy,
+              x: enemy.x + enemy.speedX * timeDiff,
+            }))
+            .filter((enemy) => enemy.x > 0)
         );
         // 弾と敵が当たっているか
         checkCollisions();
@@ -105,7 +114,7 @@ const Home = () => {
         onKeyDown={keyDownHandler}
         style={{ display: 'inline-block', border: 'solid' }}
       >
-        <Stage width={1280} height={720}>
+        <Stage width={640} height={480}>
           <Layer>
             <Rect x={nowkey[1]} y={nowkey[0]} width={50} height={40} fill="blue" />
             {enemy.map((state, index) => (
