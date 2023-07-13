@@ -1,4 +1,4 @@
-import type { TaskId, UserId } from './branded';
+import type { RoomId, TaskId, UserId } from './branded';
 
 export type UserModel = {
   id: UserId;
@@ -12,4 +12,9 @@ export type TaskModel = {
   label: string;
   done: boolean;
   created: number;
+};
+
+export type RoomModel = {
+  id: RoomId;
+  userId: UserId;
 };

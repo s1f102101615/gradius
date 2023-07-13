@@ -105,6 +105,11 @@ const Home = () => {
     };
   }, [gradius_bullet, enemy]);
 
+  useEffect(() => {
+    // ゲーム作成
+    apiClient.rooms.post();
+  }, []);
+
   if (!user) return <Loading visible />;
   return (
     <>
