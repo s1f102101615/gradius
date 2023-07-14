@@ -1,23 +1,22 @@
-import type { RoomModel } from "$/commonTypesWithClient/models";
-import { UserIdParser, roomIdParser } from "$/service/idParsers";
-import { prismaClient } from "$/service/prismaClient";
-import { randomUUID } from "crypto";
+import type { RoomModel } from '$/commonTypesWithClient/models';
+import { UserIdParser, roomIdParser } from '$/service/idParsers';
+import { prismaClient } from '$/service/prismaClient';
+import { randomUUID } from 'crypto';
 
-// const toRoomModel = (prismaRoom: Room): RoomModel => ({ 
+// const toRoomModel = (prismaRoom: Room): RoomModel => ({
 //   id: roomIdParser.parse(prismaRoom.roomId),
 //   userId: UserIdParser.parse(prismaRoom.userId),
 // });
 export const roomsRepository = {
   save: async (room: RoomModel) => {
     await prismaClient.room.upsert({
-      where: { userId: room.userId, },
-      update: {
-      },
+      where: { userId: room.userId },
+      update: {},
       create: {
         roomId: room.id,
         userId: room.userId,
       },
-    }); 
+    });
   },
   //findRoomでroomをid取得する、roomがなければ作成するようにする
   findRoom: async (userId: string): Promise<RoomModel> => {
@@ -38,9 +37,5 @@ export const roomsRepository = {
         userId: UserIdParser.parse(room.userId),
       };
     }
-
-
-  }
-
-
+  },
 };

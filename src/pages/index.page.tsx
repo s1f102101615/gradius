@@ -18,7 +18,6 @@ const Home = () => {
   );
   const animationRef = useRef<Konva.Animation | null>(null);
 
-
   // Zで弾発射 Spaceで敵生成
   const keyDownHandler = async (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.code === 'KeyZ') {
@@ -112,8 +111,6 @@ const Home = () => {
       anim.stop();
     };
   }, [gradius_bullet, enemy]);
-
-  
 
   if (!user) return <Loading visible />;
   return (
