@@ -64,6 +64,13 @@ const Home = () => {
   };
 
   useEffect(() => {
+    const fetchRooms = async () => {
+      await apiClient.rooms.get();
+    };
+    fetchRooms();
+  }, []);
+
+  useEffect(() => {
     const anim = new Konva.Animation((frame) => {
       if (frame) {
         const timeDiff = frame.timeDiff / 1000; // ミリ秒を秒に変換
