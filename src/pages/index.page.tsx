@@ -18,6 +18,7 @@ const Home = () => {
   );
   const animationRef = useRef<Konva.Animation | null>(null);
 
+
   // Zで弾発射 Spaceで敵生成
   const keyDownHandler = async (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.code === 'KeyZ') {
@@ -64,6 +65,13 @@ const Home = () => {
   };
 
   useEffect(() => {
+    const fetchRooms = async () => {
+      await apiClient.rooms.get();
+    };
+    fetchRooms();
+  }, []);
+
+  useEffect(() => {
     const anim = new Konva.Animation((frame) => {
       if (frame) {
         const timeDiff = frame.timeDiff / 1000; // ミリ秒を秒に変換
@@ -105,10 +113,7 @@ const Home = () => {
     };
   }, [gradius_bullet, enemy]);
 
-  useEffect(() => {
-    // ゲーム作成
-    apiClient.rooms.post();
-  }, []);
+  
 
   if (!user) return <Loading visible />;
   return (

@@ -16,8 +16,8 @@ model Task {
 
 model Room {
   userOnRoom UserOnRoom[]
-  roomId String @id
-  userId String
+  roomId     String       @unique
+  userId     String       @id
 }
 
 model UserOnRoom {
