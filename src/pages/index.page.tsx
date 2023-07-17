@@ -70,6 +70,10 @@ const Home = () => {
     fetchRooms();
   }, []);
 
+  // useEffect(() => {
+  //   setInterval(() => {}, 1000);
+  // }, []);
+
   useEffect(() => {
     const anim = new Konva.Animation((frame) => {
       if (frame) {
