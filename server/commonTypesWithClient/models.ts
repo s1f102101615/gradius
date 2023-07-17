@@ -17,4 +17,6 @@ export type TaskModel = {
 export type RoomModel = {
   id: RoomId;
   userId: UserId;
+  status: string;
+  scenario: string[];
 };

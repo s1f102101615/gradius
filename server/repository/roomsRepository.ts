@@ -15,9 +15,12 @@ export const roomsRepository = {
       create: {
         roomId: room.id,
         userId: room.userId,
+        status: room.status,
+        scenario: room.scenario,
       },
     });
   },
+
   //findRoomでroomをid取得する、roomがなければ作成するようにする
   findRoom: async (userId: string): Promise<RoomModel> => {
     const room = await prismaClient.room.findUnique({
@@ -28,6 +31,8 @@ export const roomsRepository = {
         data: {
           roomId: roomIdParser.parse(randomUUID()),
           userId,
+          status: 'unstarted',
+          scenario: ['20', 'dasdas'],
         },
       });
       return await roomsRepository.findRoom(userId);
@@ -35,6 +40,8 @@ export const roomsRepository = {
       return {
         id: roomIdParser.parse(room.roomId),
         userId: UserIdParser.parse(room.userId),
+        status: room.status,
+        scenario: room.scenario,
       };
     }
   },

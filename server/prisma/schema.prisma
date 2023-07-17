@@ -18,6 +18,8 @@ model Room {
   userOnRoom UserOnRoom[]
   roomId     String       @unique
   userId     String       @id
+  status     String
+  scenario   String[]
 }
 
 model UserOnRoom {
