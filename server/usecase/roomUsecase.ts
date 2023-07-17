@@ -8,6 +8,8 @@ export const roomUsecase = {
     const newRoom: RoomModel = {
       id: roomIdParser.parse(randomUUID()),
       userId: user,
+      status: 'unstarted',
+      scenario: ['30', 'god', '40', 'tec', '50', 'drag'],
     };
     await roomsRepository.save(newRoom);
 
