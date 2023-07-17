@@ -6,5 +6,6 @@ export type Methods = {
   };
   post: {
     resBody: RoomModel;
+    reqBody: { status: RoomModel['status']; nowtime: RoomModel['nowtime'] };
   };
 };

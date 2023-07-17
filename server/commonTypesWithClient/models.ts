@@ -19,4 +19,5 @@ export type RoomModel = {
   userId: UserId;
   status: string;
   scenario: string[];
+  nowtime: number[];
 };

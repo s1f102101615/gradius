@@ -4,12 +4,17 @@ import { roomIdParser } from '$/service/idParsers';
 import { randomUUID } from 'crypto';
 
 export const roomUsecase = {
-  create: async (user: RoomModel['userId']) => {
+  pause: async (
+    user: RoomModel['userId'],
+    status: RoomModel['status'],
+    nowtime: RoomModel['nowtime']
+  ) => {
     const newRoom: RoomModel = {
       id: roomIdParser.parse(randomUUID()),
       userId: user,
-      status: 'unstarted',
-      scenario: ['30', 'god', '40', 'tec', '50', 'drag'],
+      status,
+      scenario: ['1', 's', '2', 's', '3', 'n', '4', 's', '5', 's', '6', 's'],
+      nowtime,
     };
     await roomsRepository.save(newRoom);
 

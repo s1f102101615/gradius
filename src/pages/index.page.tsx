@@ -1,6 +1,7 @@
 /* eslint-disable max-depth */
 /* eslint-disable max-nested-callbacks */
 /* eslint-disable react-hooks/exhaustive-deps */
+import type { RoomModel } from '$/commonTypesWithClient/models';
 import { useAtom } from 'jotai';
 import Konva from 'konva';
 import { useEffect, useRef, useState } from 'react';
@@ -13,6 +14,8 @@ const Home = () => {
   const [user] = useAtom(userAtom);
   const [nowkey, setNowkey] = useState([0, 0]);
   const [enemy, setEnemy] = useState<{ x: number; y: number; speedX: number }[]>([]);
+  const [room, setRoom] = useState<RoomModel>();
+  const [nowtime, setNowtime] = useState([0, 0]);
   const [gradius_bullet, setGradius_bullet] = useState<{ x: number; y: number; speedX: number }[]>(
     []
   );
@@ -63,16 +66,39 @@ const Home = () => {
     });
   };
 
+  const fetchRooms = async () => {
+    const box = await apiClient.rooms.get();
+    setRoom(box.body);
+    setNowtime(box.body.nowtime);
+  };
+
+  //room読み込み作成
   useEffect(() => {
-    const fetchRooms = async () => {
-      await apiClient.rooms.get();
-    };
     fetchRooms();
   }, []);
 
-  // useEffect(() => {
-  //   setInterval(() => {}, 1000);
-  // }, []);
+  //シナリオ制御
+  useEffect(() => {
+    let time = nowtime[0];
+    const now = nowtime[1];
+    const interval = setInterval(() => {
+      if (room?.status === 'started') {
+        setNowtime([time + 1, now]);
+        console.log(time);
+        if (room.scenario && Number(room.scenario[now]) === time) {
+          console.log(room.scenario[now + 1]);
+          const enemyspwan = { x: 640, y: Math.floor(Math.random() * 481), speedX: -100 };
+          setEnemy((prevEnemy) => [...prevEnemy, enemyspwan]);
+          time = 0;
+          setNowtime([time, now + 2]);
+        }
+      }
+    }, 1000);
+
+    return () => {
+      clearInterval(interval); // コンポーネントがアンマウントされたときにインターバルをクリアしてメモリリークを防止します。
+    };
+  }, [room, nowtime]);
 
   useEffect(() => {
     const anim = new Konva.Animation((frame) => {
@@ -116,6 +142,19 @@ const Home = () => {
     };
   }, [gradius_bullet, enemy]);
 
+  const pause = async () => {
+    await apiClient.rooms.post({ body: { status: 'paused', nowtime } });
+    fetchRooms();
+    console.log('pause');
+  };
+
+  const start = async () => {
+    // 次の行のnowtime赤線が出るから一応書いておいた
+    await apiClient.rooms.post({ body: { status: 'started', nowtime } });
+    fetchRooms();
+    console.log('start');
+  };
+
   if (!user) return <Loading visible />;
   return (
     <>
@@ -137,6 +176,8 @@ const Home = () => {
           </Layer>
         </Stage>
       </div>
+      <div onClick={pause}>pause</div>
+      <div onClick={start}>start</div>
     </>
   );
 };
