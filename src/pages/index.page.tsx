@@ -38,7 +38,7 @@ const Home = () => {
       const enemyspwan = {
         x: 640,
         y: Math.floor(Math.random() * 481),
-        speedX: -100,
+        speedX: -120,
         monster: 0,
         status: 0,
       };
@@ -56,7 +56,7 @@ const Home = () => {
     enemy: { x: number; y: number; speedX: number }
   ) {
     const bullet_radius = 10;
-    const enemy_radius = 45;
+    const enemy_radius = 22.5;
     const dx = bullet.x - enemy.x;
     const dy = bullet.y - enemy.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
@@ -117,7 +117,7 @@ const Home = () => {
         console.log(time);
         if (room.scenario && Number(room.scenario[now]) === time) {
           console.log(room.scenario[now + 1]);
-          setEnemy((prevEnemy) => spawnEnemy(prevEnemy));
+          setEnemy((prevEnemy) => spawnEnemy(prevEnemy, room.scenario[now + 1]));
           time = 0;
           setNowtime([time, now + 2]);
         }
@@ -202,7 +202,7 @@ const Home = () => {
           <Layer>
             <Rect x={nowkey[1]} y={nowkey[0]} width={50} height={40} fill="blue" />
             {enemy.map((state, index) => (
-              <Circle key={index} x={state.x} y={state.y} radius={35} fill="red" />
+              <Circle key={index} x={state.x} y={state.y} radius={20} fill="red" />
             ))}
             {gradius_bullet.map((bullet, index) => (
               <Circle key={index} x={bullet.x} y={bullet.y} radius={10} fill="green" />

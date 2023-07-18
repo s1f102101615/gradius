@@ -42,11 +42,11 @@ export const roomsRepository = {
           roomId: roomIdParser.parse(randomUUID()),
           userId,
           status: 'started',
-          scenario: ['1', 's', '2', 's', '3', 'n', '4', 's', '5', 's', '6', 's'],
+          scenario: ['3', '0', '3', '0', '3', '0', '3', '0', '3', '0', '6', '0'],
           nowtime: [0, 0],
           myposition: [0, 0],
-          bullet: '',
-          enemy: '',
+          bullet: '[]',
+          enemy: '[]',
         },
       });
       return await roomsRepository.findRoom(userId);
