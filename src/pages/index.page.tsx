@@ -10,11 +10,15 @@ import { Circle, Layer, Rect, Stage } from 'react-konva';
 import { Loading } from 'src/components/Loading/Loading';
 import { apiClient } from 'src/utils/apiClient';
 import { userAtom } from '../atoms/user';
+import spawnEnemy from './spawnEnemy';
+import updateEnemy from './updateEnemy';
 
 const Home = () => {
   const [user] = useAtom(userAtom);
   const [nowkey, setNowkey] = useState([0, 0]);
-  const [enemy, setEnemy] = useState<{ x: number; y: number; speedX: number }[]>([]);
+  const [enemy, setEnemy] = useState<
+    { x: number; y: number; speedX: number; monster: number; status: number }[]
+  >([]);
   const [room, setRoom] = useState<RoomModel>();
   const [nowtime, setNowtime] = useState([0, 0]);
   const [gradius_bullet, setGradius_bullet] = useState<{ x: number; y: number; speedX: number }[]>(
@@ -31,7 +35,13 @@ const Home = () => {
       const bullet = { x: nowkey[1] + 54, y: nowkey[0] + 20, speedX: 1000 };
       setGradius_bullet((prevGradius_bullet) => [...prevGradius_bullet, bullet]);
     } else if (e.code === 'Space') {
-      const enemyspwan = { x: 640, y: Math.floor(Math.random() * 481), speedX: -100 };
+      const enemyspwan = {
+        x: 640,
+        y: Math.floor(Math.random() * 481),
+        speedX: -100,
+        monster: 0,
+        status: 0,
+      };
       setEnemy((prevEnemy) => [...prevEnemy, enemyspwan]);
     }
     const a = await apiClient.control.post({
@@ -107,8 +117,7 @@ const Home = () => {
         console.log(time);
         if (room.scenario && Number(room.scenario[now]) === time) {
           console.log(room.scenario[now + 1]);
-          const enemyspwan = { x: 640, y: Math.floor(Math.random() * 481), speedX: -100 };
-          setEnemy((prevEnemy) => [...prevEnemy, enemyspwan]);
+          setEnemy((prevEnemy) => spawnEnemy(prevEnemy));
           time = 0;
           setNowtime([time, now + 2]);
         }
@@ -136,21 +145,7 @@ const Home = () => {
               .filter((bullet) => bullet.x < 640) // 画面の右端に到達していない弾のみをフィルタリング
         );
         // 敵の動き
-        setEnemy((prev) =>
-          prev.map((enemy) => ({
-            ...enemy,
-            x: enemy.x + enemy.speedX * timeDiff,
-            speedX: room?.status === 'paused' ? 0 : enemy.speedX, // pause中はspeedXを0にする
-          }))
-        );
-        setEnemy((prev) =>
-          prev
-            .map((enemy) => ({
-              ...enemy,
-              x: enemy.x + enemy.speedX * timeDiff,
-            }))
-            .filter((enemy) => enemy.x > 0)
-        );
+        setEnemy((prev) => updateEnemy(prev, room?.status, timeDiff));
         // 弾と敵が当たっているか
         checkCollisions();
       }
