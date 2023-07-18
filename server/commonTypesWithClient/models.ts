@@ -20,4 +20,7 @@ export type RoomModel = {
   status: string;
   scenario: string[];
   nowtime: number[];
+  myposition: number[];
+  bullet: string;
+  enemy: string;
 };

@@ -11,13 +11,22 @@ export const roomsRepository = {
   save: async (room: RoomModel) => {
     await prismaClient.room.upsert({
       where: { userId: room.userId },
-      update: { status: room.status, nowtime: room.nowtime },
+      update: {
+        status: room.status,
+        nowtime: room.nowtime,
+        myposition: room.myposition,
+        bullet: room.bullet,
+        enemy: room.enemy,
+      },
       create: {
         roomId: room.id,
         userId: room.userId,
         status: room.status,
         scenario: room.scenario,
         nowtime: room.nowtime,
+        myposition: room.myposition,
+        bullet: room.bullet,
+        enemy: room.enemy,
       },
     });
   },
@@ -35,6 +44,9 @@ export const roomsRepository = {
           status: 'started',
           scenario: ['1', 's', '2', 's', '3', 'n', '4', 's', '5', 's', '6', 's'],
           nowtime: [0, 0],
+          myposition: [0, 0],
+          bullet: '',
+          enemy: '',
         },
       });
       return await roomsRepository.findRoom(userId);
@@ -45,6 +57,9 @@ export const roomsRepository = {
         status: room.status,
         scenario: room.scenario,
         nowtime: room.nowtime,
+        myposition: room.myposition,
+        bullet: room.bullet,
+        enemy: room.enemy,
       };
     }
   },

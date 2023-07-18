@@ -21,6 +21,9 @@ model Room {
   status     String
   scenario   String[]
   nowtime    Int[]
+  myposition Int[]
+  bullet     String
+  enemy      String
 }
 
 model UserOnRoom {
