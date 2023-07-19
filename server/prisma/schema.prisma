@@ -20,6 +20,10 @@ model Room {
   userId     String       @id
   status     String
   scenario   String[]
+  nowtime    Int[]
+  myposition Int[]
+  bullet     String
+  enemy      String
 }
 
 model UserOnRoom {

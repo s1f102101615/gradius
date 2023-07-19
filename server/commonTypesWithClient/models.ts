@@ -19,4 +19,8 @@ export type RoomModel = {
   userId: UserId;
   status: string;
   scenario: string[];
+  nowtime: number[];
+  myposition: number[];
+  bullet: string;
+  enemy: string;
 };

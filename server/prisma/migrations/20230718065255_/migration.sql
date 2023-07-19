@@ -14,6 +14,10 @@ CREATE TABLE "Room" (
     "userId" TEXT NOT NULL,
     "status" TEXT NOT NULL,
     "scenario" TEXT[],
+    "nowtime" INTEGER[],
+    "myposition" INTEGER[],
+    "bullet" TEXT NOT NULL,
+    "enemy" TEXT NOT NULL,
 
     CONSTRAINT "Room_pkey" PRIMARY KEY ("userId")
 );
