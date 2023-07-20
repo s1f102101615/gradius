@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 /* eslint-disable max-lines */
 /* eslint-disable max-depth */
 /* eslint-disable max-nested-callbacks */
@@ -24,30 +25,54 @@ const Home = () => {
   const [gradius_bullet, setGradius_bullet] = useState<{ x: number; y: number; speedX: number }[]>(
     []
   );
+  const [up, setUp] = useState(false);
+  const [down, setDown] = useState(false);
+  const [left, setLeft] = useState(false);
+  const [right, setRight] = useState(false);
+  const [bullet, setBullet] = useState(false);
+  const [shottimer, setShottimer] = useState(0);
   const animationRef = useRef<Konva.Animation | null>(null);
 
-  // Zで弾発射 Spaceで敵生成
-  const keyDownHandler = async (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (room?.status === 'paused') {
-      return; // pause中は何もしない
+  //キーを押したときに実行される関数
+  const handleKeyDown = (event: KeyboardEvent) => {
+    switch (event.code) {
+      case 'ArrowUp':
+        setUp(true);
+        break;
+      case 'ArrowDown':
+        setDown(true);
+        break;
+      case 'ArrowLeft':
+        setLeft(true);
+        break;
+      case 'ArrowRight':
+        setRight(true);
+        break;
+      case 'KeyZ':
+        setBullet(true);
+        break;
     }
-    if (e.code === 'KeyZ') {
-      const bullet = { x: nowkey[1] + 54, y: nowkey[0] + 20, speedX: 1000 };
-      setGradius_bullet((prevGradius_bullet) => [...prevGradius_bullet, bullet]);
-    } else if (e.code === 'Space') {
-      const enemyspwan = {
-        x: 640,
-        y: Math.floor(Math.random() * 481),
-        speedX: -120,
-        monster: 0,
-        status: 0,
-      };
-      setEnemy((prevEnemy) => [...prevEnemy, enemyspwan]);
+  };
+
+  // キーを離したときに実行される関数
+  const handleKeyUp = (event: KeyboardEvent) => {
+    switch (event.code) {
+      case 'ArrowUp':
+        setUp(false);
+        break;
+      case 'ArrowDown':
+        setDown(false);
+        break;
+      case 'ArrowLeft':
+        setLeft(false);
+        break;
+      case 'ArrowRight':
+        setRight(false);
+        break;
+      case 'KeyZ':
+        setBullet(false);
+        break;
     }
-    const a = await apiClient.control.post({
-      body: { x: nowkey[0], y: nowkey[1], KeyEvent: e.code },
-    });
-    setNowkey([a.body.x, a.body.y]);
   };
 
   //敵と球が接触しているか確かめる関数
@@ -80,6 +105,7 @@ const Home = () => {
     });
   };
 
+  //再描画
   const fetchRooms = async () => {
     const box = await apiClient.rooms.get();
     setRoom(box.body);
@@ -92,12 +118,6 @@ const Home = () => {
       prev.map((bullet) => ({
         ...bullet,
         speedX: 1000, // speedXを元の値に戻す
-      }))
-    );
-    setEnemy((prev) =>
-      prev.map((enemy) => ({
-        ...enemy,
-        speedX: -100, // speedXを元の値に戻す
       }))
     );
   };
@@ -123,16 +143,48 @@ const Home = () => {
         }
       }
     }, 1000);
+    const autosave = setInterval(async () => {
+      await apiClient.rooms.post({
+        body: {
+          status: 'paused',
+          nowtime,
+          myposition: nowkey,
+          bullet: JSON.stringify(gradius_bullet),
+          enemy: JSON.stringify(enemy),
+        },
+      });
+    }, 1000);
 
     return () => {
+      clearInterval(autosave);
       clearInterval(interval); // コンポーネントがアンマウントされたときにインターバルをクリアしてメモリリークを防止します。
     };
   }, [room, nowtime]);
 
+  //高速で実行される(Animation)
   useEffect(() => {
     const anim = new Konva.Animation((frame) => {
       if (frame) {
         const timeDiff = frame.timeDiff / 1000; // ミリ秒を秒に変換
+        if (room?.status === 'started') {
+          //自機移動
+          const nowstate = nowkey;
+          nowstate[0] = nowkey[0] + (up ? -3 : 0) + (down ? 3 : 0);
+          nowstate[1] = nowkey[1] + (left ? -3 : 0) + (right ? 3 : 0);
+          setNowkey(nowstate);
+          //弾発射
+          setShottimer(shottimer + timeDiff);
+          if (bullet) {
+            if (shottimer > 0.3) {
+              setGradius_bullet((prevGradius_bullet) => [
+                ...prevGradius_bullet,
+                { x: nowkey[1] + 54, y: nowkey[0] + 20, speedX: 1000 },
+              ]);
+              setShottimer(0);
+            }
+          }
+        }
+
         // ボールの位置や状態を更新する処理
         setGradius_bullet(
           (prev) =>
@@ -145,7 +197,7 @@ const Home = () => {
               .filter((bullet) => bullet.x < 640) // 画面の右端に到達していない弾のみをフィルタリング
         );
         // 敵の動き
-        setEnemy((prev) => updateEnemy(prev, room?.status, timeDiff));
+        setEnemy((prev) => updateEnemy(prev, room?.status, timeDiff, nowkey));
         // 弾と敵が当たっているか
         checkCollisions();
       }
@@ -157,7 +209,20 @@ const Home = () => {
     return () => {
       anim.stop();
     };
-  }, [gradius_bullet, enemy]);
+  }, [gradius_bullet, enemy, up, down, left, right, nowkey]);
+
+  //キー入力検知
+  useEffect(() => {
+    // コンポーネントがマウントされたときにイベントリスナーを追加
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
+
+    // コンポーネントがアンマウントされるときにイベントリスナーを削除
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
 
   //ポーズと再開の処理ポーズ   ブラウザバックとリロード時にも起動するように今後する。
   const pause = async () => {
@@ -193,16 +258,18 @@ const Home = () => {
   return (
     <>
       <p>gradius{nowkey}</p>
-      <div
-        tabIndex={0}
-        onKeyDown={keyDownHandler}
-        style={{ display: 'inline-block', border: 'solid' }}
-      >
+      <div tabIndex={0} style={{ display: 'inline-block', border: 'solid' }}>
         <Stage width={640} height={480}>
           <Layer>
             <Rect x={nowkey[1]} y={nowkey[0]} width={50} height={40} fill="blue" />
             {enemy.map((state, index) => (
-              <Circle key={index} x={state.x} y={state.y} radius={20} fill="red" />
+              <Circle
+                key={index}
+                x={state.x}
+                y={state.y}
+                radius={20}
+                fill={state.monster === 1 ? 'pink' : 'red'}
+              />
             ))}
             {gradius_bullet.map((bullet, index) => (
               <Circle key={index} x={bullet.x} y={bullet.y} radius={10} fill="green" />
@@ -212,6 +279,9 @@ const Home = () => {
       </div>
       <div onClick={pause}>pause</div>
       <div onClick={start}>start</div>
+      <div>
+        {nowtime[0]}秒{nowtime[1] / 2}wave
+      </div>
     </>
   );
 };
