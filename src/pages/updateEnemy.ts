@@ -40,9 +40,9 @@ const updateEnemy = (
                 ? enemy.y +
                   (roomStatus === 'paused'
                     ? 0
-                    : enemy.y - nowkey[0] >= 0
-                    ? -30 * timeDiff
-                    : 30 * timeDiff)
+                    : enemy.y - nowkey[0] - 20 >= 0
+                    ? -35 * timeDiff
+                    : 35 * timeDiff)
                 : enemy.y,
           };
         default:
