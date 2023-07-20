@@ -19,6 +19,7 @@ $ npm i
 $ npm i --prefix server
 ```
 ララです
+OSSのテスト
 
 ### 環境変数ファイルの作成
 
