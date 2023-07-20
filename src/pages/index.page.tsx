@@ -145,7 +145,7 @@ const Home = () => {
               .filter((bullet) => bullet.x < 640) // 画面の右端に到達していない弾のみをフィルタリング
         );
         // 敵の動き
-        setEnemy((prev) => updateEnemy(prev, room?.status, timeDiff));
+        setEnemy((prev) => updateEnemy(prev, room?.status, timeDiff, nowkey));
         // 弾と敵が当たっているか
         checkCollisions();
       }
@@ -202,7 +202,13 @@ const Home = () => {
           <Layer>
             <Rect x={nowkey[1]} y={nowkey[0]} width={50} height={40} fill="blue" />
             {enemy.map((state, index) => (
-              <Circle key={index} x={state.x} y={state.y} radius={20} fill="red" />
+              <Circle
+                key={index}
+                x={state.x}
+                y={state.y}
+                radius={20}
+                fill={state.monster === 1 ? 'pink' : 'red'}
+              />
             ))}
             {gradius_bullet.map((bullet, index) => (
               <Circle key={index} x={bullet.x} y={bullet.y} radius={10} fill="green" />
