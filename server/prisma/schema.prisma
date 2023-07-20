@@ -13,3 +13,25 @@ model Task {
   done      Boolean
   createdAt DateTime
 }
+
+model Room {
+  userOnRoom UserOnRoom[]
+  roomId     String       @unique
+  userId     String       @id
+  status     String
+  scenario   String[]
+  nowtime    Int[]
+  myposition Int[]
+  bullet     String
+  enemy      String
+}
+
+model UserOnRoom {
+  firebaseId String
+  Room       Room      @relation(fields: [roomId], references: [roomId])
+  in         DateTime
+  out        DateTime?
+  roomId     String
+
+  @@id([firebaseId, roomId])
+}
